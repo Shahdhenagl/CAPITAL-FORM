@@ -1,0 +1,181 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { waLink } from "@/lib/whatsapp";
+
+const FACILITY = {
+  hotel: "فندق",
+  company: "شركة",
+  building: "عمارة سكنية",
+  other: "أخرى",
+};
+
+const STATUS = {
+  new: "جديد",
+  scheduled: "تم تحديد موعد",
+  done: "تمت الزيارة",
+};
+
+function fmtDate(s) {
+  if (!s) return "";
+  try {
+    return new Date(s).toLocaleString("ar-EG", {
+      dateStyle: "medium",
+      timeStyle: "short",
+    });
+  } catch {
+    return s;
+  }
+}
+
+export default function LeadCard({ lead }) {
+  const router = useRouter();
+  const [appointment, setAppointment] = useState(
+    lead.appointment_at ? toLocalInput(lead.appointment_at) : ""
+  );
+  const [busy, setBusy] = useState(false);
+
+  async function patch(update) {
+    setBusy(true);
+    try {
+      const res = await fetch(`/api/leads/${lead.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(update),
+      });
+      if (res.ok) router.refresh();
+      else alert("تعذر الحفظ");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function remove() {
+    if (!confirm("حذف هذا الطلب نهائياً؟")) return;
+    setBusy(true);
+    try {
+      const res = await fetch(`/api/leads/${lead.id}`, { method: "DELETE" });
+      if (res.ok) router.refresh();
+      else alert("تعذر الحذف");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function saveAppointment() {
+    const iso = appointment ? new Date(appointment).toISOString() : null;
+    patch({ appointment_at: iso, status: iso ? "scheduled" : lead.status });
+  }
+
+  const waNumber = lead.whatsapp || lead.phone;
+  const apptText = appointment
+    ? `مرحباً ${lead.name}، معك فريق عاصمة الكون للمصاعد. تم تحديد موعد زيارة المعاينة والصيانة المجانية يوم ${fmtDate(
+        new Date(appointment).toISOString()
+      )}. برجاء التأكيد. شكراً لك.`
+    : `مرحباً ${lead.name}، معك فريق عاصمة الكون للمصاعد بخصوص طلب زيارة الصيانة المجانية.`;
+
+  return (
+    <div className="lead">
+      <div className="lead-top">
+        <div>
+          <div className="lead-name">{lead.name}</div>
+          <div style={{ color: "var(--muted)", fontSize: 13 }}>
+            {fmtDate(lead.created_at)}
+          </div>
+        </div>
+        <span className={`chip ${lead.status}`}>
+          {STATUS[lead.status] || lead.status}
+        </span>
+      </div>
+
+      <div className="lead-meta">
+        <div>
+          <b>الجوال: </b>
+          <a href={`tel:${lead.phone}`}>{lead.phone}</a>
+        </div>
+        {lead.whatsapp && (
+          <div>
+            <b>واتساب: </b>
+            {lead.whatsapp}
+          </div>
+        )}
+        <div>
+          <b>نوع المنشأة: </b>
+          {FACILITY[lead.facility_type] || lead.facility_type || "-"}
+        </div>
+        {lead.address && (
+          <div>
+            <b>العنوان: </b>
+            {lead.address}
+          </div>
+        )}
+        {lead.maps_link && (
+          <div>
+            <b>الموقع: </b>
+            <a href={lead.maps_link} target="_blank" rel="noreferrer">
+              فتح على خرائط جوجل
+            </a>
+          </div>
+        )}
+        {lead.appointment_at && (
+          <div>
+            <b>الموعد: </b>
+            {fmtDate(lead.appointment_at)}
+          </div>
+        )}
+        {lead.notes && (
+          <div style={{ gridColumn: "1 / -1" }}>
+            <b>ملاحظات: </b>
+            {lead.notes}
+          </div>
+        )}
+      </div>
+
+      <div className="lead-actions">
+        <input
+          type="datetime-local"
+          value={appointment}
+          onChange={(e) => setAppointment(e.target.value)}
+        />
+        <button className="btn sm" onClick={saveAppointment} disabled={busy}>
+          حفظ الموعد
+        </button>
+        <a
+          className="btn green sm"
+          href={waLink(waNumber, apptText)}
+          target="_blank"
+          rel="noreferrer"
+        >
+          إرسال واتساب
+        </a>
+        {lead.status !== "done" && (
+          <button
+            className="btn ghost sm"
+            onClick={() => patch({ status: "done" })}
+            disabled={busy}
+          >
+            تمت الزيارة
+          </button>
+        )}
+        <button
+          className="btn ghost sm"
+          style={{ color: "var(--danger)", marginInlineStart: "auto" }}
+          onClick={remove}
+          disabled={busy}
+        >
+          حذف
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// Converts an ISO string to a value usable by <input type="datetime-local">.
+function toLocalInput(iso) {
+  const d = new Date(iso);
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(
+    d.getHours()
+  )}:${pad(d.getMinutes())}`;
+}
