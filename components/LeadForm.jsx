@@ -12,6 +12,17 @@ const LocationPicker = dynamic(() => import("./LocationPicker"), {
   ),
 });
 
+const COUNTRIES = [
+  { code: "+966", name: "🇸🇦 السعودية", ph: "5XXXXXXXX" },
+  { code: "+20", name: "🇪🇬 مصر", ph: "10XXXXXXXX" },
+];
+
+// Combines a country dial code with a local number (drops leading zeros).
+function fullNumber(code, local) {
+  const n = String(local || "").replace(/\D/g, "").replace(/^0+/, "");
+  return n ? `${code}${n}` : "";
+}
+
 export default function LeadForm() {
   const [form, setForm] = useState({
     name: "",
@@ -21,10 +32,14 @@ export default function LeadForm() {
     address: "",
     notes: "",
   });
+  const [country, setCountry] = useState(COUNTRIES[0].code);
   const [location, setLocation] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [done, setDone] = useState(false);
+
+  const activeCountry =
+    COUNTRIES.find((c) => c.code === country) || COUNTRIES[0];
 
   function update(key, val) {
     setForm((f) => ({ ...f, [key]: val }));
@@ -46,6 +61,8 @@ export default function LeadForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...form,
+          phone: fullNumber(country, form.phone),
+          whatsapp: fullNumber(country, form.whatsapp),
           lat: location?.lat ?? null,
           lng: location?.lng ?? null,
         }),
@@ -95,31 +112,48 @@ export default function LeadForm() {
         />
       </div>
 
+      <div className="field">
+        <label>الدولة</label>
+        <select value={country} onChange={(e) => setCountry(e.target.value)}>
+          {COUNTRIES.map((c) => (
+            <option key={c.code} value={c.code}>
+              {c.name} ({c.code})
+            </option>
+          ))}
+        </select>
+      </div>
+
       <div className="row">
         <div className="field">
           <label>
             رقم الجوال <span style={{ color: "var(--danger)" }}>*</span>
           </label>
-          <input
-            type="tel"
-            inputMode="tel"
-            value={form.phone}
-            onChange={(e) => update("phone", e.target.value)}
-            placeholder="01xxxxxxxxx"
-            required
-          />
+          <div className="tel">
+            <span className="tel-code">{country}</span>
+            <input
+              type="tel"
+              inputMode="tel"
+              value={form.phone}
+              onChange={(e) => update("phone", e.target.value)}
+              placeholder={activeCountry.ph}
+              required
+            />
+          </div>
         </div>
         <div className="field">
           <label>
             رقم الواتساب <span className="hint">(للتواصل وتحديد الموعد)</span>
           </label>
-          <input
-            type="tel"
-            inputMode="tel"
-            value={form.whatsapp}
-            onChange={(e) => update("whatsapp", e.target.value)}
-            placeholder="01xxxxxxxxx"
-          />
+          <div className="tel">
+            <span className="tel-code">{country}</span>
+            <input
+              type="tel"
+              inputMode="tel"
+              value={form.whatsapp}
+              onChange={(e) => update("whatsapp", e.target.value)}
+              placeholder={activeCountry.ph}
+            />
+          </div>
         </div>
       </div>
 
