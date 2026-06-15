@@ -1,10 +1,13 @@
+import { unstable_noStore as noStore } from "next/cache";
 import { getSupabase } from "@/lib/supabase";
 import LeadsDashboard from "@/components/LeadsDashboard";
 import LogoutButton from "@/components/LogoutButton";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 async function getLeads() {
+  noStore(); // never cache leads — always read the latest from the DB
   try {
     const supabase = getSupabase();
     const { data, error } = await supabase
