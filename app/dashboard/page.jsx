@@ -1,5 +1,5 @@
 import { getSupabase } from "@/lib/supabase";
-import LeadCard from "@/components/LeadCard";
+import LeadsDashboard from "@/components/LeadsDashboard";
 import LogoutButton from "@/components/LogoutButton";
 
 export const dynamic = "force-dynamic";
@@ -24,11 +24,6 @@ async function getLeads() {
 export default async function DashboardPage() {
   const { leads, err } = await getLeads();
 
-  const total = leads.length;
-  const fresh = leads.filter((l) => l.status === "new").length;
-  const scheduled = leads.filter((l) => l.status === "scheduled").length;
-  const done = leads.filter((l) => l.status === "done").length;
-
   return (
     <div className="dash">
       <div className="dash-head">
@@ -47,29 +42,10 @@ export default async function DashboardPage() {
         </div>
       )}
 
-      <div className="stats">
-        <div className="stat">
-          <div className="n">{total}</div>
-          <div className="l">إجمالي الطلبات</div>
-        </div>
-        <div className="stat">
-          <div className="n">{fresh}</div>
-          <div className="l">طلبات جديدة</div>
-        </div>
-        <div className="stat">
-          <div className="n">{scheduled}</div>
-          <div className="l">مواعيد محددة</div>
-        </div>
-        <div className="stat">
-          <div className="n">{done}</div>
-          <div className="l">زيارات تمت</div>
-        </div>
-      </div>
-
       {leads.length === 0 ? (
         <div className="empty">لا توجد طلبات بعد.</div>
       ) : (
-        leads.map((lead) => <LeadCard key={lead.id} lead={lead} />)
+        <LeadsDashboard leads={leads} />
       )}
     </div>
   );
