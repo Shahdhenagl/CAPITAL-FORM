@@ -34,7 +34,9 @@ export default function LeadCard({ lead }) {
   const [appointment, setAppointment] = useState(
     lead.appointment_at ? toLocalInput(lead.appointment_at) : ""
   );
+  const [teamNote, setTeamNote] = useState(lead.team_note || "");
   const [busy, setBusy] = useState(false);
+  const noteChanged = (teamNote || "") !== (lead.team_note || "");
 
   async function patch(update) {
     setBusy(true);
@@ -66,6 +68,10 @@ export default function LeadCard({ lead }) {
   function saveAppointment() {
     const iso = appointment ? new Date(appointment).toISOString() : null;
     patch({ appointment_at: iso, status: iso ? "scheduled" : lead.status });
+  }
+
+  function saveTeamNote() {
+    patch({ team_note: teamNote });
   }
 
   const waNumber = lead.whatsapp || lead.phone;
@@ -130,6 +136,23 @@ export default function LeadCard({ lead }) {
             {lead.notes}
           </div>
         )}
+      </div>
+
+      <div className="team-note">
+        <label>📝 ملاحظة الفريق</label>
+        <textarea
+          rows={2}
+          placeholder="اكتب ملاحظة داخلية للفريق عن هذا الطلب..."
+          value={teamNote}
+          onChange={(e) => setTeamNote(e.target.value)}
+        />
+        <button
+          className="btn sm"
+          onClick={saveTeamNote}
+          disabled={busy || !noteChanged}
+        >
+          {noteChanged ? "حفظ الملاحظة" : "محفوظة"}
+        </button>
       </div>
 
       <div className="lead-actions">

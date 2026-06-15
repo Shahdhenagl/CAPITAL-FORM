@@ -14,8 +14,12 @@ create table if not exists public.leads (
   lng double precision,
   maps_link text,
   status text not null default 'new',
-  appointment_at timestamptz
+  appointment_at timestamptz,
+  team_note text
 );
+
+-- لو الجدول موجود من قبل، شغّل السطر ده لإضافة عمود ملاحظة الفريق:
+alter table public.leads add column if not exists team_note text;
 
 create index if not exists leads_created_at_idx on public.leads (created_at desc);
 

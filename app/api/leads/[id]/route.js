@@ -34,6 +34,12 @@ export async function PATCH(req, { params }) {
   if ("appointment_at" in body) {
     update.appointment_at = body.appointment_at || null;
   }
+  if ("team_note" in body) {
+    update.team_note =
+      typeof body.team_note === "string" && body.team_note.trim()
+        ? body.team_note.trim()
+        : null;
+  }
 
   if (Object.keys(update).length === 0) {
     return NextResponse.json({ error: "لا يوجد تحديث" }, { status: 400 });
