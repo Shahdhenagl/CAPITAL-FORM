@@ -21,6 +21,9 @@ create table if not exists public.leads (
 -- لو الجدول موجود من قبل، شغّل السطر ده لإضافة عمود ملاحظة الفريق:
 alter table public.leads add column if not exists team_note text;
 
+-- عمود لتتبّع إرسال التذكير التلقائي (يمنع تكرار الإرسال من الـ Cron):
+alter table public.leads add column if not exists reminder_sent_at timestamptz;
+
 create index if not exists leads_created_at_idx on public.leads (created_at desc);
 
 -- نُفعّل RLS ونمنع أي وصول عام؛ التطبيق يستخدم مفتاح service_role
