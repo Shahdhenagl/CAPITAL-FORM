@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
 import { notifyTelegram } from "@/lib/telegram";
+import { sendTemplate } from "@/lib/bevatel";
 
 export const runtime = "nodejs";
 
@@ -69,6 +70,22 @@ export async function POST(req) {
 
     // Notify Telegram (non-blocking failure).
     await notifyTelegram(data);
+
+    // Send WhatsApp welcome via Bevatel (non-blocking failure).
+    const waTo = data.whatsapp || data.phone;
+    if (waTo) {
+      try {
+        await sendTemplate({
+          to: waTo,
+          name: data.name,
+          kind: "welcome",
+          params: [data.name],
+          content: `مرحباً ${data.name}، شكراً لتواصلك مع عاصمة الكون للمصاعد.\nاستلمنا طلبك لزيارة الصيانة المجانية، وسيتواصل معك فريقنا قريباً لتحديد الموعد المناسب.`,
+        });
+      } catch (err) {
+        console.error("Bevatel welcome failed:", err);
+      }
+    }
 
     return NextResponse.json({ ok: true, id: data.id });
   } catch (err) {

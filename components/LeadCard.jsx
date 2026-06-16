@@ -36,7 +36,29 @@ export default function LeadCard({ lead }) {
   );
   const [teamNote, setTeamNote] = useState(lead.team_note || "");
   const [busy, setBusy] = useState(false);
+  const [sending, setSending] = useState("");
   const noteChanged = (teamNote || "") !== (lead.team_note || "");
+
+  async function sendTemplate(kind) {
+    setSending(kind);
+    try {
+      const res = await fetch(`/api/leads/${lead.id}/notify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ kind }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        alert(kind === "confirm" ? "تم إرسال تأكيد الموعد ✅" : "تم إرسال التذكير ⏰");
+      } else {
+        alert(data.error || "تعذر إرسال الرسالة");
+      }
+    } catch {
+      alert("تعذر الاتصال بالخادم");
+    } finally {
+      setSending("");
+    }
+  }
 
   async function patch(update) {
     setBusy(true);
@@ -164,13 +186,29 @@ export default function LeadCard({ lead }) {
         <button className="btn sm" onClick={saveAppointment} disabled={busy}>
           حفظ الموعد
         </button>
-        <a
+        <button
           className="btn green sm"
+          onClick={() => sendTemplate("confirm")}
+          disabled={busy || !!sending || !lead.appointment_at}
+          title={!lead.appointment_at ? "احفظ الموعد أولاً" : "إرسال تأكيد الموعد عبر بيفاتيل"}
+        >
+          {sending === "confirm" ? "جارٍ الإرسال..." : "تأكيد الموعد ✅"}
+        </button>
+        <button
+          className="btn sm"
+          onClick={() => sendTemplate("reminder")}
+          disabled={busy || !!sending || !lead.appointment_at}
+          title={!lead.appointment_at ? "احفظ الموعد أولاً" : "إرسال تذكير عبر بيفاتيل"}
+        >
+          {sending === "reminder" ? "جارٍ الإرسال..." : "تذكير ⏰"}
+        </button>
+        <a
+          className="btn ghost sm"
           href={waLink(waNumber, apptText)}
           target="_blank"
           rel="noreferrer"
         >
-          إرسال واتساب
+          واتساب يدوي
         </a>
         {lead.status !== "done" && (
           <button
@@ -181,6 +219,14 @@ export default function LeadCard({ lead }) {
             تمت الزيارة
           </button>
         )}
+        <button
+          className="btn sm"
+          onClick={() => sendTemplate("followup")}
+          disabled={busy || !!sending}
+          title="إرسال رسالة شكر بعد الزيارة"
+        >
+          {sending === "followup" ? "جارٍ الإرسال..." : "شكر بعد الزيارة 🙏"}
+        </button>
         <button
           className="btn ghost sm"
           style={{ color: "var(--danger)", marginInlineStart: "auto" }}
