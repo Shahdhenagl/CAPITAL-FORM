@@ -2,6 +2,7 @@ import { unstable_noStore as noStore } from "next/cache";
 import { getSupabase } from "@/lib/supabase";
 import LeadsDashboard from "@/components/LeadsDashboard";
 import LogoutButton from "@/components/LogoutButton";
+import NewLeadNotifier from "@/components/NewLeadNotifier";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -35,7 +36,10 @@ export default async function DashboardPage() {
           <img src="/logo.svg" alt="logo" />
           طلبات الزيارة - عاصمة الكون للمصاعد
         </h1>
-        <LogoutButton />
+        <div className="dash-head-actions">
+          <NewLeadNotifier initialCount={leads.length} />
+          <LogoutButton />
+        </div>
       </div>
 
       {err && (
