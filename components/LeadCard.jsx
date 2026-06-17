@@ -93,6 +93,7 @@ export default function LeadCard({ lead }) {
   }
 
   function saveTeamNote() {
+    if (!noteChanged) return;
     patch({ team_note: teamNote });
   }
 
@@ -167,6 +168,7 @@ export default function LeadCard({ lead }) {
           placeholder="اكتب ملاحظة داخلية للفريق عن هذا الطلب..."
           value={teamNote}
           onChange={(e) => setTeamNote(e.target.value)}
+          onBlur={saveTeamNote}
         />
         <button
           className="btn sm"
