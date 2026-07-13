@@ -41,11 +41,22 @@ export default function NewLeadNotifier({ initialCount = 0 }) {
   }, []);
 
   const notify = useCallback(
-    (added) => {
+    (added, info = {}) => {
       playBeep();
-      const title = "🔔 طلب زيارة جديد";
-      const body =
-        added > 1 ? `وصل ${added} طلبات جديدة` : "وصل طلب زيارة جديد على الداش بورد";
+      const { employee, name } = info;
+      let title = "🔔 طلب زيارة جديد";
+      let body;
+      if (added > 1) {
+        body = `وصل ${added} طلبات جديدة على الداش بورد`;
+      } else if (employee) {
+        // Lead entered from the dashboard by a marketing employee.
+        title = "🔔 طلب جديد من موظف تسويق";
+        body = `الموظف ${employee} أضاف طلب${name ? ` للعميل ${name}` : ""}`;
+      } else {
+        body = name
+          ? `وصل طلب زيارة جديد: ${name}`
+          : "وصل طلب زيارة جديد على الداش بورد";
+      }
       try {
         if ("Notification" in window && Notification.permission === "granted") {
           new Notification(title, { body, icon: "/logo.svg" });
@@ -110,12 +121,12 @@ export default function NewLeadNotifier({ initialCount = 0 }) {
       try {
         const res = await fetch("/api/leads/count", { cache: "no-store" });
         if (!res.ok) return;
-        const { count } = await res.json();
+        const { count, latestName, latestEmployee } = await res.json();
         if (!alive || typeof count !== "number") return;
         if (count > lastCount.current) {
           const added = count - lastCount.current;
           lastCount.current = count;
-          notify(added);
+          notify(added, { employee: latestEmployee, name: latestName });
           router.refresh(); // pull the new lead(s) into the list
         } else if (count < lastCount.current) {
           lastCount.current = count; // a lead was deleted — resync silently
