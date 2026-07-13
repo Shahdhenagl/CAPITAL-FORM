@@ -82,7 +82,7 @@ export async function GET(req) {
         name: lead.name,
         kind: "reminder",
         params: [lead.name, dateStr],
-        content: `تذكير من عاصمة الكون للمصاعد ⏰\nمرحباً ${lead.name}، نذكّرك بموعد زيارة الصيانة المجانية يوم ${dateStr}.\nفي انتظارك، وبرجاء إبلاغنا فوراً لو رغبت في تغيير الموعد.`,
+        content: `تذكير من عاصمة الكون للمصاعد ⏰\nمرحباً ${lead.name}، نذكّرك بموعد زيارة المعاينة المجانية يوم ${dateStr}.\nفي انتظارك، وبرجاء إبلاغنا فوراً لو رغبت في تغيير الموعد.`,
       });
       results.sent++;
       // Mark as reminded (best-effort) so we don't send again.

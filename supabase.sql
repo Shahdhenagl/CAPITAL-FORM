@@ -15,8 +15,21 @@ create table if not exists public.leads (
   maps_link text,
   status text not null default 'new',
   appointment_at timestamptz,
-  team_note text
+  team_note text,
+  employee_name text
 );
+
+-- اسم موظف التسويق الذي رفع الطلب من لوحة التحكم (فارغ لو الطلب جاء مباشرة من العميل):
+alter table public.leads add column if not exists employee_name text;
+
+-- جدول موظفي التسويق لتغذية قائمة الأسماء (الدروب داون) في لوحة التحكم:
+create table if not exists public.employees (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  name text not null unique
+);
+
+alter table public.employees enable row level security;
 
 -- لو الجدول موجود من قبل، شغّل السطر ده لإضافة عمود ملاحظة الفريق:
 alter table public.leads add column if not exists team_note text;

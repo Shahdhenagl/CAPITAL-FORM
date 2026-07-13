@@ -99,10 +99,10 @@ export default function LeadCard({ lead }) {
 
   const waNumber = lead.whatsapp || lead.phone;
   const apptText = appointment
-    ? `مرحباً ${lead.name}، معك فريق عاصمة الكون للمصاعد. تم تحديد موعد زيارة المعاينة والصيانة المجانية يوم ${fmtDate(
+    ? `مرحباً ${lead.name}، معك فريق عاصمة الكون للمصاعد. تم تحديد موعد زيارة المعاينة المجانية يوم ${fmtDate(
         new Date(appointment).toISOString()
-      )}. برجاء التأكيد. شكراً لك.`
-    : `مرحباً ${lead.name}، معك فريق عاصمة الكون للمصاعد بخصوص طلب زيارة الصيانة المجانية.`;
+      )}، مع خصم يصل إلى 50% على عقود الصيانة والتركيب. برجاء التأكيد. شكراً لك.`
+    : `مرحباً ${lead.name}، معك فريق عاصمة الكون للمصاعد بخصوص طلب زيارة المعاينة المجانية.`;
 
   return (
     <div className="lead">
@@ -119,6 +119,12 @@ export default function LeadCard({ lead }) {
       </div>
 
       <div className="lead-meta">
+        {lead.employee_name && (
+          <div>
+            <b>موظف التسويق: </b>
+            {lead.employee_name}
+          </div>
+        )}
         <div>
           <b>الجوال: </b>
           <a href={`tel:${lead.phone}`}>{lead.phone}</a>

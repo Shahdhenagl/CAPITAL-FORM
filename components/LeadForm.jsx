@@ -88,7 +88,8 @@ export default function LeadForm() {
           <h2>تم استلام طلبك بنجاح!</h2>
           <p style={{ color: "var(--muted)" }}>
             شكراً لتواصلك مع <b>عاصمة الكون للمصاعد</b>. سيتواصل معك فريقنا قريباً
-            لتحديد موعد الزيارة والصيانة المجانية.
+            لتحديد موعد زيارة المعاينة المجانية، مع خصم يصل إلى 50% على عقود
+            الصيانة والتركيب.
           </p>
         </div>
       </div>
@@ -199,7 +200,7 @@ export default function LeadForm() {
       </div>
 
       <button className="btn full" type="submit" disabled={loading}>
-        {loading ? "جاري الإرسال..." : "تأكيد طلب الزيارة المجانية"}
+        {loading ? "جاري الإرسال..." : "تأكيد طلب المعاينة المجانية"}
       </button>
     </form>
   );

@@ -328,6 +328,14 @@ textarea {
   flex-wrap: wrap;
 }
 
+.manual-lead {
+  margin-bottom: 22px;
+}
+
+.manual-lead .manual-card {
+  margin-top: 14px;
+}
+
 .stats {
   display: grid;
   grid-template-columns: repeat(4, 1fr);

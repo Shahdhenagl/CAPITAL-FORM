@@ -21,6 +21,7 @@ export async function POST(req) {
   const facility_type = (body.facility_type || "").trim();
   const address = (body.address || "").trim();
   const notes = (body.notes || "").trim();
+  const employee_name = (body.employee_name || "").trim();
   const lat = typeof body.lat === "number" ? body.lat : null;
   const lng = typeof body.lng === "number" ? body.lng : null;
 
@@ -50,15 +51,27 @@ export async function POST(req) {
     lng,
     maps_link,
     status: "new",
+    employee_name: employee_name || null,
   };
 
   try {
     const supabase = getSupabase();
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from("leads")
       .insert(lead)
       .select()
       .single();
+
+    // Fallback: if the DB migration (employee_name column) hasn't been applied
+    // yet, retry without it so the public form keeps working.
+    if (error && /employee_name/i.test(error.message || "")) {
+      const { employee_name: _omit, ...legacyLead } = lead;
+      ({ data, error } = await supabase
+        .from("leads")
+        .insert(legacyLead)
+        .select()
+        .single());
+    }
 
     if (error) {
       console.error("Supabase insert error:", error);
@@ -66,6 +79,21 @@ export async function POST(req) {
         { error: "تعذر حفظ الطلب، حاول مرة أخرى" },
         { status: 500 }
       );
+    }
+
+    // Register the marketing employee so their name appears in the drop-down
+    // next time (idempotent — duplicates are ignored).
+    if (employee_name) {
+      try {
+        await supabase
+          .from("employees")
+          .upsert(
+            { name: employee_name },
+            { onConflict: "name", ignoreDuplicates: true }
+          );
+      } catch (err) {
+        console.error("Employee upsert failed:", err);
+      }
     }
 
     // Notify Telegram (non-blocking failure).
@@ -80,7 +108,7 @@ export async function POST(req) {
           name: data.name,
           kind: "welcome",
           params: [data.name],
-          content: `مرحباً ${data.name}، شكراً لتواصلك مع عاصمة الكون للمصاعد.\nاستلمنا طلبك لزيارة الصيانة المجانية، وسيتواصل معك فريقنا قريباً لتحديد الموعد المناسب.`,
+          content: `مرحباً ${data.name}، شكراً لتواصلك مع عاصمة الكون للمصاعد.\nاستلمنا طلبك لزيارة المعاينة المجانية، وستحصل على خصم يصل إلى 50% على عقود الصيانة والتركيب. وسيتواصل معك فريقنا قريباً لتحديد الموعد المناسب.`,
         });
       } catch (err) {
         console.error("Bevatel welcome failed:", err);

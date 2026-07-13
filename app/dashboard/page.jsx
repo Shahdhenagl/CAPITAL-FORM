@@ -3,6 +3,7 @@ import { getSupabase } from "@/lib/supabase";
 import LeadsDashboard from "@/components/LeadsDashboard";
 import LogoutButton from "@/components/LogoutButton";
 import NewLeadNotifier from "@/components/NewLeadNotifier";
+import ManualLeadForm from "@/components/ManualLeadForm";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -48,6 +49,8 @@ export default async function DashboardPage() {
           ملف الـ SQL.
         </div>
       )}
+
+      <ManualLeadForm />
 
       {leads.length === 0 ? (
         <div className="empty">لا توجد طلبات بعد.</div>
