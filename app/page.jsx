@@ -11,7 +11,7 @@ export default function HomePage() {
         <h1>عاصمة الكون للمصاعد</h1>
 
         <div className="badge">
-          🎁 سجل و تابع عاصمه الكون و ارتقي بمصعدك
+          🎁 سجل و تابع عاصمة الكون و ارتقي بمصعدك
         </div>
       </header>
 
