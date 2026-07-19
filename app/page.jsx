@@ -9,9 +9,7 @@ export default function HomePage() {
           <img src="/logo.png" alt="عاصمة الكون للمصاعد" />
         </div>
         <h1>عاصمة الكون للمصاعد</h1>
-        <p>
-          سجل بياناتك الان و استمتع بخدماتنا المميزه
-        </p>
+
         <div className="badge">
           🎁 سجل و تابع عاصمه الكون و ارتقي بمصعدك
         </div>
