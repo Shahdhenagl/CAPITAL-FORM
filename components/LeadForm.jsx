@@ -19,7 +19,11 @@ const COUNTRIES = [
 
 // Combines a country dial code with a local number (drops leading zeros).
 function fullNumber(code, local) {
-  const n = String(local || "").replace(/\D/g, "").replace(/^0+/, "");
+  let n = String(local || "").replace(/\D/g, "").replace(/^0+/, "");
+  const codeNum = code.replace(/\D/g, "");
+  if (n.startsWith(codeNum)) {
+    n = n.slice(codeNum.length);
+  }
   return n ? `${code}${n}` : "";
 }
 
