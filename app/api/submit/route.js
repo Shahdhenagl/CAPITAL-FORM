@@ -20,6 +20,7 @@ export async function POST(req) {
   const whatsapp = (body.whatsapp || "").trim();
   const facility_type = (body.facility_type || "").trim();
   const address = (body.address || "").trim();
+  const request_type = (body.request_type || "").trim();
   const notes = (body.notes || "").trim();
   const employee_name = (body.employee_name || "").trim();
   const lat = typeof body.lat === "number" ? body.lat : null;
@@ -40,13 +41,19 @@ export async function POST(req) {
       ? `https://www.google.com/maps?q=${lat},${lng}`
       : null;
 
+  let finalNotes = notes;
+  if (request_type) {
+    const typeLabel = request_type === "maintenance" ? "صيانة" : (request_type === "installation" ? "تركيب" : request_type);
+    finalNotes = finalNotes ? `[نوع الطلب: ${typeLabel}]\n${finalNotes}` : `[نوع الطلب: ${typeLabel}]`;
+  }
+
   const lead = {
     name,
     phone,
     whatsapp: whatsapp || null,
     facility_type: facility_type || null,
     address: address || null,
-    notes: notes || null,
+    notes: finalNotes || null,
     lat,
     lng,
     maps_link,

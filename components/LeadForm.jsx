@@ -33,6 +33,7 @@ export default function LeadForm() {
     phone: "",
     whatsapp: "",
     facility_type: "",
+    request_type: "",
     address: "",
     notes: "",
   });
@@ -191,6 +192,18 @@ export default function LeadForm() {
           <span className="hint">(يساعد فريقنا في الوصول بسرعة)</span>
         </label>
         <LocationPicker value={location} onChange={setLocation} />
+      </div>
+
+      <div className="field">
+        <label>نوع الطلب</label>
+        <select
+          value={form.request_type}
+          onChange={(e) => update("request_type", e.target.value)}
+        >
+          <option value="">اختر نوع الطلب...</option>
+          <option value="maintenance">صيانة</option>
+          <option value="installation">تركيب</option>
+        </select>
       </div>
 
       <div className="field">
