@@ -161,7 +161,7 @@ export default function LeadCard({ lead }) {
         )}
         {lead.notes && (
           <div style={{ gridColumn: "1 / -1" }}>
-            <b>ملاحظات: </b>
+            <b>تفاصيل الطلب: </b>
             {lead.notes}
           </div>
         )}
