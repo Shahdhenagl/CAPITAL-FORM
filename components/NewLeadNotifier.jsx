@@ -59,7 +59,7 @@ export default function NewLeadNotifier({ initialCount = 0 }) {
       }
       try {
         if ("Notification" in window && Notification.permission === "granted") {
-          new Notification(title, { body, icon: "/logo.svg" });
+          new Notification(title, { body, icon: "/logo.png" });
         }
       } catch {
         // Ignore notification errors.

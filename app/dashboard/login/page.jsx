@@ -37,7 +37,7 @@ export default function LoginPage() {
     <div className="login-wrap">
       <form className="login-card" onSubmit={handleSubmit}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/logo.svg" alt="عاصمة الكون للمصاعد" />
+        <img src="/logo.png" alt="عاصمة الكون للمصاعد" />
         <h2 style={{ marginTop: 0 }}>لوحة التحكم</h2>
         <p style={{ color: "var(--muted)", marginTop: 4 }}>
           عاصمة الكون للمصاعد

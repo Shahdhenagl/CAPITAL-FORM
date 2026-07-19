@@ -34,7 +34,7 @@ export default async function DashboardPage() {
       <div className="dash-head">
         <h1>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.svg" alt="logo" />
+          <img src="/logo.png" alt="logo" />
           طلبات الزيارة - عاصمة الكون للمصاعد
         </h1>
         <div className="dash-head-actions">
