@@ -194,7 +194,7 @@ export default function LeadForm() {
       </div>
 
       <div className="field">
-        <label>ملاحظات إضافية</label>
+        <label>تفاصيل الطلب</label>
         <textarea
           value={form.notes}
           onChange={(e) => update("notes", e.target.value)}
