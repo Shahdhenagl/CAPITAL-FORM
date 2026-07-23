@@ -59,6 +59,7 @@ export default function LeadsDashboard({ leads }) {
     () => ({
       all: byMonth.length,
       new: byMonth.filter((l) => l.status === "new").length,
+      contacted: byMonth.filter((l) => l.status === "contacted").length,
       scheduled: byMonth.filter((l) => l.status === "scheduled").length,
       done: byMonth.filter((l) => l.status === "done").length,
     }),
@@ -73,6 +74,7 @@ export default function LeadsDashboard({ leads }) {
   const cards = [
     { key: "all", label: "إجمالي الطلبات", n: counts.all },
     { key: "new", label: "طلبات جديدة", n: counts.new },
+    { key: "contacted", label: "تم التواصل", n: counts.contacted },
     { key: "scheduled", label: "مواعيد محددة", n: counts.scheduled },
     { key: "done", label: "زيارات تمت", n: counts.done },
   ];

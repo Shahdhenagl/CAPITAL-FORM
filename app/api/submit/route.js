@@ -115,7 +115,7 @@ export async function POST(req) {
           name: data.name,
           kind: "welcome",
           params: [data.name],
-          content: `مرحباً ${data.name}، شكراً لتواصلك مع عاصمة الكون للمصاعد.\nاستلمنا طلبك لزيارة المعاينة المجانية، سجل و تابع عاصمة الكون و ارتقي بمصعدك. وسيتواصل معك فريقنا قريباً لتحديد الموعد المناسب.`,
+          content: `مرحباً ${data.name}، شكراً لتواصلك مع عاصمة الكون للمصاعد.\nتم استلام طلبك بنجاح، وسيتواصل معك فريقنا هاتفياً في أقرب وقت.`,
         });
       } catch (err) {
         console.error("Bevatel welcome failed:", err);

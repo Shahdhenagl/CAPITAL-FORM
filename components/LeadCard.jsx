@@ -13,6 +13,7 @@ const FACILITY = {
 
 const STATUS = {
   new: "جديد",
+  contacted: "تم التواصل",
   scheduled: "تم تحديد موعد",
   done: "تمت الزيارة",
 };
@@ -218,6 +219,15 @@ export default function LeadCard({ lead }) {
         >
           واتساب يدوي
         </a>
+        {lead.status === "new" && (
+          <button
+            className="btn ghost sm"
+            onClick={() => patch({ status: "contacted" })}
+            disabled={busy}
+          >
+            تم التواصل
+          </button>
+        )}
         {lead.status !== "done" && (
           <button
             className="btn ghost sm"
